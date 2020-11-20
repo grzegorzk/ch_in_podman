@@ -1,0 +1,2 @@
+deb http://ftp.debian.org/debian buster main
+deb http://ftp.debian.org/debian buster-updates main
