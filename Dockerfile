@@ -12,7 +12,6 @@ RUN apt-get update -qq \
         xorg \
     && rm -rf /var/lib/apt/lists/*
 
-COPY docker_files/entrypoint.sh /entrypoint.sh
 COPY docker_files/chromium.pref /etc/apt/preferences.d/chromium.pref
 COPY docker_files/debian.list /etc/apt/sources.list.d/debian.list
 
@@ -33,8 +32,10 @@ ARG USER_ID
 RUN groupadd -g $GROUP_ID --system ch && \
     useradd --system --create-home --gid $GROUP_ID --groups audio,video ch \
     && mkdir --parents /home/ch/reports \
-    && chown --recursive ch:ch /home/ch \
-    && chmod ugo+x /entrypoint.sh
+    && chown --recursive ch:ch /home/ch
+
+COPY docker_files/entrypoint.sh /entrypoint.sh
+RUN chmod ugo+x /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD []
