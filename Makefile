@@ -6,10 +6,12 @@ CH_IMAGE=chromium
 
 
 list:
-	@ $(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null \
-		| awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' \
-		| sort \
-		| egrep -v -e '^[^[:alnum:]]' -e '^$@$$'
+	@ $(MAKE) -pRrq -f Makefile : 2>/dev/null \
+		| grep -e "^[^[:blank:]]*:$$\|#.*recipe to execute" \
+		| grep -B 1 "recipe to execute" \
+		| grep -e "^[^#]*:$$" \
+		| sed -e "s/\(.*\):/\1/g" \
+		| sort
 
 build_chromium:
 	${DOCKER} build \
@@ -24,10 +26,11 @@ run_chromium:
 		-v /dev/dri:/dev/dri \
 		-v $(HOME)/.Xauthority:/root/.Xauthority \
 		--device /dev/video0 \
+		--device /dev/dri/card0:/dev/dri/card0 \
 		--security-opt=label=type:container_runtime_t \
 		-e DISPLAY \
 		-v $(HOME)/.config/pulse/cookie:/root/.config/pulse/cookie \
 		--device /dev/snd \
 		-e PULSE_SERVER=unix:${XDG_RUNTIME_DIR}/pulse/native \
 		-v ${XDG_RUNTIME_DIR}/pulse/native:${XDG_RUNTIME_DIR}/pulse/native \
-		localhost/chromium
+		${CH_IMAGE}
