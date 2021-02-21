@@ -3,7 +3,8 @@ SHELL=/bin/bash
 DOCKER=podman
 
 CH_IMAGE=chromium
-
+UUID=$(shell id -u)
+GUID=$(shell id -g)
 
 list:
 	@ $(MAKE) -pRrq -f Makefile : 2>/dev/null \
@@ -13,23 +14,25 @@ list:
 		| sed -e "s/\(.*\):/\1/g" \
 		| sort
 
-build_chromium:
-	${DOCKER} build \
-		--build-arg USER_ID=$(shell id -u) \
-		--build-arg GROUP_ID=$(shell id -g) \
+build:
+	@ ${DOCKER} build \
+		--build-arg USER_ID=${UUID} \
+		--build-arg GROUP_ID=${GUID} \
 		-t ${CH_IMAGE} .;
 
-run_chromium:
+run:
 	@ ${DOCKER} run \
+		--userns=keep-id \
 		--net=host -it --rm --shm-size 2g \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
 		-v /dev/dri:/dev/dri \
-		-v $(HOME)/.Xauthority:/root/.Xauthority \
+		-v $(HOME)/.Xauthority:/home/ch/.Xauthority \
 		--device /dev/video0 \
-		--device /dev/dri/card0:/dev/dri/card0 \
-		--security-opt=label=type:container_runtime_t \
 		-e DISPLAY \
-		-v $(HOME)/.config/pulse/cookie:/root/.config/pulse/cookie \
+		-v $(HOME)/.config/pulse/cookie:/home/ch/.config/pulse/cookie \
+		-v /etc/machine-id:/etc/machine-id \
+		-v /run/user/${UUID}/pulse:/run/user/${UUID}/pulse \
+		-v /var/lib/dbus:/var/lib/dbus \
 		--device /dev/snd \
 		-e PULSE_SERVER=unix:${XDG_RUNTIME_DIR}/pulse/native \
 		-v ${XDG_RUNTIME_DIR}/pulse/native:${XDG_RUNTIME_DIR}/pulse/native \

@@ -11,8 +11,8 @@
 # Run
 
 ```bash
-make build_chromium
-make run_chromium
+make build
+make run
 ```
 
 # Thanks
