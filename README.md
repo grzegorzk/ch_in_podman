@@ -10,9 +10,20 @@
 
 # Run
 
+IMPORANT - close chrome if it's already running.
+
+If you have podman:
+
 ```bash
 make build
 make run
+```
+
+If you prefer docker:
+
+```bash
+make build DOCKER=docker
+make run DOCKER=docker
 ```
 
 # Thanks
