@@ -2,6 +2,10 @@ SHELL=/bin/bash
 
 DOCKER=podman
 
+DAY=01
+MONTH=$(shell date +%m)
+YEAR=$(shell date +%Y)
+
 CH_IMAGE=chromium
 UUID=$(shell id -u)
 GUID=$(shell id -g)
@@ -18,6 +22,9 @@ build:
 	@ ${DOCKER} build \
 		--build-arg USER_ID=${UUID} \
 		--build-arg GROUP_ID=${GUID} \
+		--build-arg ARCH_ARCHIVE_YEAR=${YEAR} \
+		--build-arg ARCH_ARCHIVE_MONTH=${MONTH} \
+		--build-arg ARCH_ARCHIVE_DAY=${DAY} \
 		-t ${CH_IMAGE} .;
 
 run:
