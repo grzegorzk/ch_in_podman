@@ -10,6 +10,8 @@ CH_IMAGE=chromium
 UUID=$(shell id -u)
 GUID=$(shell id -g)
 
+WITH_USERNS=$$(eval [ "podman" == "${DOCKER}" ] && echo "--userns=keep-id")
+
 list:
 	@ $(MAKE) -pRrq -f Makefile : 2>/dev/null \
 		| grep -e "^[^[:blank:]]*:$$\|#.*recipe to execute" \
@@ -29,7 +31,7 @@ build:
 
 run:
 	@ ${DOCKER} run \
-		--userns=keep-id \
+		${WITH_USERNS} \
 		--net=host -it --rm --shm-size 2g \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
 		-v /dev/dri:/dev/dri \
