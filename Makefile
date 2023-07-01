@@ -23,7 +23,8 @@ build:
 		-t ${CH_IMAGE} .;
 
 run:
-	@ ${DOCKER} run \
+	@ xhost +local: \
+	&& ${DOCKER} run \
 		${WITH_USERNS} \
 		--net=host -it --rm --shm-size 2g \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
