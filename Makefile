@@ -23,8 +23,7 @@ build:
 		-t ${CH_IMAGE} .;
 
 run:
-	@ xhost +local: \
-	&& ${DOCKER} run \
+	@ ${DOCKER} run \
 		${WITH_USERNS} \
 		--net=host -it --rm --shm-size 2g \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
@@ -32,6 +31,8 @@ run:
 		-v $(HOME)/.Xauthority:/home/ch/.Xauthority \
 		--device /dev/video0 \
 		-e DISPLAY \
+		-e XAUTHORITY \
+		-v ${XAUTHORITY}:${XAUTHORITY} \
 		-v $(HOME)/.config/pulse/cookie:/home/ch/.config/pulse/cookie \
 		-v /etc/machine-id:/etc/machine-id \
 		-v /run/user/${UUID}/pulse:/run/user/${UUID}/pulse \
